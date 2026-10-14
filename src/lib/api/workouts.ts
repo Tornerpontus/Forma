@@ -163,6 +163,8 @@ export function workoutToDraft(w: WorkoutWithDetails): WorkoutDraft {
         weight: s.weight == null ? null : Number(s.weight),
         reps: s.reps,
         rir: s.rir == null ? null : Number(s.rir),
+        duration_s: s.duration_seconds,
+        distance_m: s.distance_m == null ? null : Number(s.distance_m),
         completed: s.completed,
         completed_at: s.completed_at,
       })),

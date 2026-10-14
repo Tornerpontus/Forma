@@ -15,6 +15,8 @@ const prev = (type: HistorySet['set_type'], weight: number, reps: number): Histo
   reps,
   rir: null,
   completed: true,
+  duration_seconds: null,
+  distance_m: null,
 })
 
 describe('workout draft', () => {

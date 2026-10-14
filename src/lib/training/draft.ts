@@ -96,7 +96,7 @@ export const ops = {
   removeExercise: (exId: string): Updater => (d) => bump({ ...d, exercises: d.exercises.filter((e) => e.id !== exId) }),
 
   replaceExercise: (exId: string, exercise_id: string): Updater => (d) =>
-    mapExercise(d, exId, (e) => ({ ...e, exercise_id, sets: e.sets.map((s) => ({ ...s, weight: null, reps: null, completed: false, completed_at: null })) })),
+    mapExercise(d, exId, (e) => ({ ...e, exercise_id, sets: e.sets.map((s) => ({ ...s, weight: null, reps: null, duration_s: null, distance_m: null, completed: false, completed_at: null })) })),
 
   moveExercise: (exId: string, delta: number): Updater => (d) => {
     const i = d.exercises.findIndex((e) => e.id === exId)
@@ -132,7 +132,7 @@ export const ops = {
       if (!last) return { ...e, sets: [emptySet()] }
       return {
         ...e,
-        sets: [...e.sets, { ...emptySet(last.set_type === 'warmup' ? 'normal' : last.set_type), weight: last.weight, reps: last.reps, rir: last.rir }],
+        sets: [...e.sets, { ...emptySet(last.set_type === 'warmup' ? 'normal' : last.set_type), weight: last.weight, reps: last.reps, rir: last.rir, duration_s: last.duration_s ?? null, distance_m: last.distance_m ?? null }],
       }
     }),
 
@@ -146,7 +146,7 @@ export const ops = {
    * One-tap completion. Empty fields are filled from the placeholder (previous session / suggestion),
    * so a repeat of last time is a single tap. Un-completing keeps the values.
    */
-  toggleSet: (exId: string, setId: string, fallback?: { weight: number | null; reps: number | null }): Updater => (d) =>
+  toggleSet: (exId: string, setId: string, fallback?: { weight: number | null; reps: number | null; duration_s?: number | null; distance_m?: number | null }): Updater => (d) =>
     mapExercise(d, exId, (e) => ({
       ...e,
       sets: e.sets.map((s) => {
@@ -156,6 +156,8 @@ export const ops = {
           ...s,
           weight: s.weight ?? fallback?.weight ?? null,
           reps: s.reps ?? fallback?.reps ?? null,
+          duration_s: s.duration_s ?? fallback?.duration_s ?? null,
+          distance_m: s.distance_m ?? fallback?.distance_m ?? null,
           completed: true,
           completed_at: new Date().toISOString(),
         }
@@ -196,6 +198,8 @@ export function draftToPayload(d: WorkoutDraft, ended_at?: string) {
             weight: s.weight,
             reps: s.reps,
             rir: s.rir,
+            duration_seconds: s.duration_s ?? null,
+            distance_m: s.distance_m ?? null,
             completed: true,
             completed_at: s.completed_at,
           })),

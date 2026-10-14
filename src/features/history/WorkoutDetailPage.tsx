@@ -11,7 +11,7 @@ import { useExerciseMap, type Exercise } from '@/lib/api/exercises'
 import { useExerciseStats, usePrsByWorkout } from '@/lib/api/history'
 import { useProfile } from '@/lib/api/profile'
 import { formatDateLong, formatDuration, formatVolume } from '@/lib/format'
-import { e1rm, formatNum, setVolume, type PrKind } from '@/lib/training/calc'
+import { e1rm, formatDurationShort, formatKm, formatNum, formatPace, setVolume, type PrKind } from '@/lib/training/calc'
 import { buildExercise, ops } from '@/lib/training/draft'
 import type { WorkoutDraft } from '@/lib/training/types'
 import { SET_TYPE_LABEL } from '@/lib/labels'
@@ -195,6 +195,7 @@ export function WorkoutDetailPage() {
           const info = exMap.get(e.exercise_id)
           const exPrs = prs.filter((p) => p.exercise_id === e.exercise_id)
           const mode = info?.weight_mode ?? 'total'
+          const cardio = info?.muscle_group === 'cardio'
           let n = 0
           return (
             <Card key={e.id} data-testid="detail-exercise">
@@ -215,9 +216,9 @@ export function WorkoutDetailPage() {
                 <thead className="text-[11px] uppercase tracking-wider text-subtle">
                   <tr>
                     <th className="w-10 py-1 text-left font-semibold">Set</th>
-                    <th className="py-1 text-left font-semibold">Vikt × reps</th>
-                    <th className="py-1 text-right font-semibold">e1RM</th>
-                    <th className="py-1 text-right font-semibold">Volym</th>
+                    <th className="py-1 text-left font-semibold">{cardio ? 'Tid · distans' : 'Vikt × reps'}</th>
+                    <th className="py-1 text-right font-semibold">{cardio ? 'Tempo' : 'e1RM'}</th>
+                    <th className="py-1 text-right font-semibold">{cardio ? '' : 'Volym'}</th>
                   </tr>
                 </thead>
                 <tbody className="tabular">
@@ -232,12 +233,26 @@ export function WorkoutDetailPage() {
                             {s.set_type === 'warmup' ? 'U' : s.set_type === 'failure' ? `${n}F` : s.set_type === 'drop' ? `${n}D` : n}
                           </span>
                         </td>
+                        {cardio ? (
+                          <>
+                            <td className="py-1">
+                              {formatDurationShort(s.duration_seconds)} · {formatKm(s.distance_m == null ? null : Number(s.distance_m))}
+                            </td>
+                            <td className="py-1 text-right text-muted">
+                              {s.duration_seconds && s.distance_m ? formatPace(Math.round(s.duration_seconds / (Number(s.distance_m) / 1000))) : ''}
+                            </td>
+                            <td />
+                          </>
+                        ) : (
+                        <>
                         <td className="py-1">
                           {formatNum(w)} kg × {s.reps ?? '–'}
                           {s.rir != null && <span className="text-subtle"> · RIR {formatNum(Number(s.rir))}</span>}
                         </td>
                         <td className="py-1 text-right text-muted">{est ? formatNum(est) : ''}</td>
                         <td className="py-1 text-right text-muted">{s.set_type !== 'warmup' ? Math.round(setVolume(w, s.reps, mode)) : ''}</td>
+                        </>
+                        )}
                       </tr>
                     )
                   })}

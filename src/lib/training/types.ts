@@ -7,6 +7,9 @@ export interface DraftSet {
   weight: number | null
   reps: number | null
   rir: number | null
+  /** Cardio only. Optional so drafts saved before cardio support still load. */
+  duration_s?: number | null
+  distance_m?: number | null
   completed: boolean
   completed_at: string | null
 }
@@ -59,4 +62,6 @@ export interface HistorySet {
   reps: number | null
   rir: number | null
   completed: boolean
+  duration_seconds: number | null
+  distance_m: number | null
 }

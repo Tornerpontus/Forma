@@ -16,12 +16,12 @@ export function useSetHistory() {
       const rows = await fetchAll<HistorySet>((from, to) =>
         supabase
           .from('set_history')
-          .select('set_id, workout_id, workout_name, started_at, exercise_id, exercise_position, set_position, set_type, weight, reps, rir, completed')
+          .select('set_id, workout_id, workout_name, started_at, exercise_id, exercise_position, set_position, set_type, weight, reps, rir, completed, duration_seconds, distance_m')
           .order('started_at', { ascending: true })
           .order('set_id', { ascending: true })
           .range(from, to) as unknown as PromiseLike<{ data: HistorySet[] | null; error: { message: string } | null }>,
       )
-      return rows.map((r) => ({ ...r, weight: r.weight == null ? null : Number(r.weight), rir: r.rir == null ? null : Number(r.rir) }))
+      return rows.map((r) => ({ ...r, weight: r.weight == null ? null : Number(r.weight), rir: r.rir == null ? null : Number(r.rir), distance_m: r.distance_m == null ? null : Number(r.distance_m) }))
     },
     staleTime: 60_000,
   })

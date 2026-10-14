@@ -263,3 +263,50 @@ export function formatNum(n: number | null | undefined, digits = 1): string {
   const r = Math.round(n * 10 ** digits) / 10 ** digits
   return r.toLocaleString('sv-SE', { maximumFractionDigits: digits })
 }
+
+// ---------------------------------------------------------------------------
+// Cardio
+// ---------------------------------------------------------------------------
+
+export interface CardioSession {
+  workout_id: string
+  date: string
+  seconds: number
+  meters: number
+  /** Seconds per km, only when both time and distance were logged. */
+  paceSecPerKm: number | null
+}
+
+/** Sums time and distance per workout for a cardio exercise, oldest first. */
+export function cardioSessions(history: HistorySet[]): CardioSession[] {
+  const by = new Map<string, CardioSession>()
+  for (const s of history) {
+    if (!s.completed) continue
+    const cur = by.get(s.workout_id) ?? { workout_id: s.workout_id, date: s.started_at, seconds: 0, meters: 0, paceSecPerKm: null }
+    cur.seconds += s.duration_seconds ?? 0
+    cur.meters += s.distance_m ?? 0
+    by.set(s.workout_id, cur)
+  }
+  const out = [...by.values()].filter((c) => c.seconds > 0 || c.meters > 0)
+  for (const c of out) c.paceSecPerKm = c.seconds > 0 && c.meters > 0 ? Math.round(c.seconds / (c.meters / 1000)) : null
+  return out.sort((a, b) => a.date.localeCompare(b.date))
+}
+
+/** 1:05:30 / 25:00 */
+export function formatDurationShort(seconds: number | null | undefined): string {
+  if (seconds == null) return '–'
+  const s = Math.round(seconds)
+  const h = Math.floor(s / 3600)
+  const m = Math.floor((s % 3600) / 60)
+  const sec = s % 60
+  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`
+}
+
+export function formatKm(meters: number | null | undefined): string {
+  if (meters == null) return '–'
+  return `${formatNum(meters / 1000, 2)} km`
+}
+
+export function formatPace(secPerKm: number | null): string {
+  return secPerKm == null ? '–' : `${formatDurationShort(secPerKm)} /km`
+}

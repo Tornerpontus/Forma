@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { EQUIPMENT_LABEL, MUSCLE_LABEL, SET_TYPE_LABEL } from '@/lib/labels'
 import { formatDate } from '@/lib/format'
-import { formatNum, type Suggestion } from '@/lib/training/calc'
+import { formatDurationShort, formatKm, formatNum, type Suggestion } from '@/lib/training/calc'
 import { ops, previousForSet } from '@/lib/training/draft'
 import type { DraftExercise, DraftSet, HistorySet, SetType, WorkoutDraft } from '@/lib/training/types'
 import type { Exercise } from '@/lib/api/exercises'
@@ -58,6 +58,11 @@ export const ExerciseBlock = memo(function ExerciseBlock({
   const perDb = info?.weight_mode === 'per_dumbbell'
   const bodyweight = info?.weight_mode === 'bodyweight'
   const unilateral = info?.is_unilateral
+  const cardio = info?.muscle_group === 'cardio'
+  const withRir = showRir && !cardio
+  const gridCols = withRir
+    ? 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_3rem]'
+    : 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_3rem]'
 
   const prevCompleted = previous?.filter((s) => s.completed) ?? []
   let workingNo = 0
@@ -79,7 +84,7 @@ export const ExerciseBlock = memo(function ExerciseBlock({
             {info && `${MUSCLE_LABEL[info.muscle_group]} · ${EQUIPMENT_LABEL[info.equipment]}`}
             {perDb && ' · kg per hantel'}
             {unilateral && ' · reps per sida'}
-            {exercise.target && ` · mål ${exercise.target.sets}×${exercise.target.rep_min === exercise.target.rep_max ? exercise.target.rep_min : `${exercise.target.rep_min}–${exercise.target.rep_max}`}`}
+            {exercise.target && !cardio && ` · mål ${exercise.target.sets}×${exercise.target.rep_min === exercise.target.rep_max ? exercise.target.rep_min : `${exercise.target.rep_min}–${exercise.target.rep_max}`}`}
           </p>
         </div>
         <button
@@ -92,7 +97,7 @@ export const ExerciseBlock = memo(function ExerciseBlock({
         </button>
       </header>
 
-      {(prevCompleted.length > 0 || suggestion) && (
+      {(prevCompleted.length > 0 || (suggestion && !cardio)) && (
         <div className="mx-4 mt-3 space-y-1.5 rounded-xl bg-surface-2/60 px-3 py-2.5 text-[13px]" data-testid="previous-performance">
           {prevCompleted.length > 0 && (
             <div className="flex items-start gap-2 text-muted">
@@ -101,12 +106,12 @@ export const ExerciseBlock = memo(function ExerciseBlock({
                 <span className="text-subtle">Förra {previousDate ? formatDate(previousDate) : ''}: </span>
                 {prevCompleted
                   .filter((s) => s.set_type !== 'warmup')
-                  .map((s) => `${formatNum(s.weight)} kg × ${s.reps ?? '–'}`)
+                  .map((s) => (cardio ? cardioText(s.duration_seconds, s.distance_m) : `${formatNum(s.weight)} kg × ${s.reps ?? '–'}`))
                   .join(' · ')}
               </span>
             </div>
           )}
-          {suggestion && live && (
+          {suggestion && live && !cardio && (
             <button
               type="button"
               className="flex w-full items-start gap-2 text-left text-accent"
@@ -144,14 +149,14 @@ export const ExerciseBlock = memo(function ExerciseBlock({
         <div
           className={cn(
             'grid items-center gap-1.5 px-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-subtle',
-            showRir ? 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_3rem]' : 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_3rem]',
+            gridCols,
           )}
         >
           <span className="text-center">Set</span>
           <span className="text-center">Förra</span>
-          <span className="text-center">{bodyweight ? '+kg' : perDb ? 'kg/st' : 'kg'}</span>
-          <span className="text-center">{unilateral ? 'reps/s' : 'reps'}</span>
-          {showRir && <span className="text-center">RIR</span>}
+          <span className="text-center">{cardio ? 'min' : bodyweight ? '+kg' : perDb ? 'kg/st' : 'kg'}</span>
+          <span className="text-center">{cardio ? 'km' : unilateral ? 'reps/s' : 'reps'}</span>
+          {withRir && <span className="text-center">RIR</span>}
           <span className="sr-only">Klar</span>
         </div>
         <ul className="space-y-1">
@@ -170,7 +175,7 @@ export const ExerciseBlock = memo(function ExerciseBlock({
                 data-completed={s.completed}
                 className={cn(
                   'grid items-center gap-1.5 rounded-xl px-2 py-1 transition-colors',
-                  showRir ? 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.7fr)_3rem]' : 'grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_3rem]',
+                  gridCols,
                   s.completed && 'bg-accent/[0.08]',
                 )}
               >
@@ -183,8 +188,33 @@ export const ExerciseBlock = memo(function ExerciseBlock({
                   {label}
                 </button>
                 <span className="tabular truncate text-center text-[13px] text-subtle" aria-label="Förra gången">
-                  {prev ? `${formatNum(prev.weight)}×${prev.reps ?? '–'}` : '–'}
+                  {prev ? (cardio ? cardioText(prev.duration_seconds, prev.distance_m, true) : `${formatNum(prev.weight)}×${prev.reps ?? '–'}`) : '–'}
                 </span>
+                {cardio ? (
+                  <>
+                    <NumberCell
+                      decimal
+                      label={`Minuter set ${label}`}
+                      value={s.duration_s == null ? null : Math.round((s.duration_s / 60) * 100) / 100}
+                      min={0}
+                      max={1440}
+                      placeholder={prev?.duration_seconds != null ? formatNum(prev.duration_seconds / 60) : 'min'}
+                      muted={s.completed}
+                      onChange={(v) => dispatch(ops.updateSet(exercise.id, s.id, { duration_s: v == null ? null : Math.round(v * 60) }))}
+                    />
+                    <NumberCell
+                      decimal
+                      label={`Kilometer set ${label}`}
+                      value={s.distance_m == null ? null : Math.round(s.distance_m) / 1000}
+                      min={0}
+                      max={1000}
+                      placeholder={prev?.distance_m != null ? formatNum(prev.distance_m / 1000, 2) : 'km'}
+                      muted={s.completed}
+                      onChange={(v) => dispatch(ops.updateSet(exercise.id, s.id, { distance_m: v == null ? null : Math.round(v * 1000) }))}
+                    />
+                  </>
+                ) : (
+                <>
                 <NumberCell
                   decimal
                   label={`Vikt set ${label}`}
@@ -204,7 +234,9 @@ export const ExerciseBlock = memo(function ExerciseBlock({
                   muted={s.completed}
                   onChange={(v) => dispatch(ops.updateSet(exercise.id, s.id, { reps: v }))}
                 />
-                {showRir && (
+                </>
+                )}
+                {withRir && (
                   <NumberCell
                     decimal
                     label={`RIR set ${label}`}
@@ -221,9 +253,11 @@ export const ExerciseBlock = memo(function ExerciseBlock({
                   aria-label={s.completed ? `Ångra set ${label}` : `Markera set ${label} som klart`}
                   aria-pressed={s.completed}
                   onClick={() => {
-                    const fallback = { weight: placeholderWeight ?? (bodyweight ? 0 : null), reps: placeholderReps }
+                    const fallback = cardio
+                      ? { weight: null, reps: null, duration_s: prev?.duration_seconds ?? null, distance_m: prev?.distance_m ?? null }
+                      : { weight: placeholderWeight ?? (bodyweight ? 0 : null), reps: placeholderReps }
                     dispatch(ops.toggleSet(exercise.id, s.id, fallback))
-                    if (!s.completed) onSetCompleted?.(exercise)
+                    if (!s.completed && !cardio) onSetCompleted?.(exercise) // no rest timer between cardio intervals
                   }}
                   className={cn(
                     'flex h-11 w-12 items-center justify-center rounded-lg transition-[background-color,transform] active:scale-90',
@@ -339,6 +373,12 @@ export const ExerciseBlock = memo(function ExerciseBlock({
     </section>
   )
 })
+
+function cardioText(seconds: number | null, meters: number | null, compact = false): string {
+  const parts = [seconds != null ? formatDurationShort(seconds) : null, meters != null ? formatKm(meters) : null].filter(Boolean)
+  if (!parts.length) return '–'
+  return compact ? parts.join(' ').replace(' km', 'k') : parts.join(' · ')
+}
 
 function NotesEditor({ initial, onSave }: { initial: string; onSave: (v: string) => void }) {
   const [v, setV] = useState(initial)

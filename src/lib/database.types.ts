@@ -345,14 +345,14 @@ isOneToOne: false
                   ]
                 },"workout_sets": {
                   Row: {
-                    "completed": boolean,"completed_at": string | null,"id": string,"position": number,"reps": number | null,"rir": number | null,"set_type": string,"user_id": string,"weight": number | null,"workout_exercise_id": string
+                    "completed": boolean,"completed_at": string | null,"distance_m": number | null,"duration_seconds": number | null,"id": string,"position": number,"reps": number | null,"rir": number | null,"set_type": string,"user_id": string,"weight": number | null,"workout_exercise_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "completed"?: boolean,"completed_at"?: string | null,"id"?: string,"position"?: number,"reps"?: number | null,"rir"?: number | null,"set_type"?: string,"user_id": string,"weight"?: number | null,"workout_exercise_id": string
+                    "completed"?: boolean,"completed_at"?: string | null,"distance_m"?: number | null,"duration_seconds"?: number | null,"id"?: string,"position"?: number,"reps"?: number | null,"rir"?: number | null,"set_type"?: string,"user_id": string,"weight"?: number | null,"workout_exercise_id": string
                   }
                   Update: {
-                    "completed"?: boolean,"completed_at"?: string | null,"id"?: string,"position"?: number,"reps"?: number | null,"rir"?: number | null,"set_type"?: string,"user_id"?: string,"weight"?: number | null,"workout_exercise_id"?: string
+                    "completed"?: boolean,"completed_at"?: string | null,"distance_m"?: number | null,"duration_seconds"?: number | null,"id"?: string,"position"?: number,"reps"?: number | null,"rir"?: number | null,"set_type"?: string,"user_id"?: string,"weight"?: number | null,"workout_exercise_id"?: string
                   }
                   Relationships: [
                     {
@@ -394,7 +394,7 @@ isOneToOne: false
           Views: {
             "set_history": {
                   Row: {
-                    "completed": boolean | null,"exercise_id": string | null,"exercise_position": number | null,"reps": number | null,"rir": number | null,"set_id": string | null,"set_position": number | null,"set_type": string | null,"started_at": string | null,"user_id": string | null,"weight": number | null,"workout_exercise_id": string | null,"workout_id": string | null,"workout_name": string | null
+                    "completed": boolean | null,"distance_m": number | null,"duration_seconds": number | null,"exercise_id": string | null,"exercise_position": number | null,"reps": number | null,"rir": number | null,"set_id": string | null,"set_position": number | null,"set_type": string | null,"started_at": string | null,"user_id": string | null,"weight": number | null,"workout_exercise_id": string | null,"workout_id": string | null,"workout_name": string | null
                   }
                   ComputedFields: never
                   Relationships: [

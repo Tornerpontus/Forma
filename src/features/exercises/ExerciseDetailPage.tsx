@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils'
 import { BackLink } from '@/features/programs/ProgramDetailPage'
 import { PR_LABEL } from '@/features/history/WorkoutDetailPage'
 import { ExerciseFormSheet } from './ExerciseForm'
+import { CardioStats } from './CardioStats'
 
 type Metric = 'bestE1rm' | 'topWeight' | 'volume' | 'totalReps'
 const METRICS: { value: Metric; label: string }[] = [
@@ -65,7 +66,7 @@ export function ExerciseDetailPage() {
       <PageHeader
         back={<BackLink to="/exercises" label="Övningar" />}
         title={exercise.name}
-        subtitle={`${MUSCLE_LABEL[exercise.muscle_group]} · ${EQUIPMENT_LABEL[exercise.equipment]} · ${WEIGHT_MODE_LABEL[exercise.weight_mode]}${exercise.is_unilateral ? ' · unilateral' : ''}`}
+        subtitle={`${MUSCLE_LABEL[exercise.muscle_group]} · ${EQUIPMENT_LABEL[exercise.equipment]} ${exercise.muscle_group === 'cardio' ? '' : ` · ${WEIGHT_MODE_LABEL[exercise.weight_mode]}`}${exercise.is_unilateral ? ' · unilateral' : ''}`}
       />
 
       <div className="flex flex-wrap gap-2">
@@ -89,6 +90,8 @@ export function ExerciseDetailPage() {
 
       {!st ? (
         <EmptyState icon={<TrendingUp />} title="Ingen historik än" description="Logga övningen i ett pass så visas rekord och utveckling här." />
+      ) : exercise.muscle_group === 'cardio' ? (
+        <CardioStats sets={st.sessions.flatMap((s) => s.sets)} names={new Map(st.sessions.map((s) => [s.workout_id, s.workout_name]))} />
       ) : (
         <>
           {/* Records */}

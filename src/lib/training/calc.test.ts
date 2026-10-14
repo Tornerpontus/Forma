@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { aggregateByPeriod, computeRecords, e1rm, groupSessions, periodDelta, setVolume, suggestNext } from './calc'
+import { aggregateByPeriod, cardioSessions, computeRecords, e1rm, formatDurationShort, formatKm, formatPace, groupSessions, periodDelta, setVolume, suggestNext } from './calc'
 import type { HistorySet } from './types'
 
 let n = 0
@@ -17,6 +17,8 @@ function s(workout: string, date: string, weight: number | null, reps: number | 
     reps,
     rir: null,
     completed: true,
+    duration_seconds: null,
+    distance_m: null,
     ...extra,
   }
 }
@@ -114,5 +116,33 @@ describe('suggestNext', () => {
   it('without a range beats the top set by one rep', () => {
     const [last] = groupSessions([s('a', '2026-09-01T10:00:00Z', 100, 5)])
     expect(suggestNext(last, null, 'barbell', 'total')).toMatchObject({ weight: 100, reps: 6 })
+  })
+})
+
+describe('cardio', () => {
+  const base = { workout_name: 'Pass', exercise_id: 'run', exercise_position: 0, set_type: 'normal' as const, weight: null, reps: null, rir: null }
+  it('sums time and distance per workout and computes pace', () => {
+    const rows = [
+      { ...base, set_id: '1', workout_id: 'w1', started_at: '2026-10-01T10:00:00Z', set_position: 0, completed: true, duration_seconds: 1500, distance_m: 5000 },
+      { ...base, set_id: '2', workout_id: 'w1', started_at: '2026-10-01T10:00:00Z', set_position: 1, completed: true, duration_seconds: 300, distance_m: 1000 },
+      { ...base, set_id: '3', workout_id: 'w2', started_at: '2026-10-05T10:00:00Z', set_position: 0, completed: true, duration_seconds: 1200, distance_m: null },
+      { ...base, set_id: '4', workout_id: 'w3', started_at: '2026-10-06T10:00:00Z', set_position: 0, completed: true, duration_seconds: null, distance_m: null },
+    ]
+    const s = cardioSessions(rows)
+    expect(s).toHaveLength(2)
+    expect(s[0]).toMatchObject({ workout_id: 'w1', seconds: 1800, meters: 6000, paceSecPerKm: 300 })
+    expect(s[1]).toMatchObject({ workout_id: 'w2', seconds: 1200, meters: 0, paceSecPerKm: null })
+  })
+  it('formats durations, distance and pace', () => {
+    expect(formatDurationShort(1500)).toBe('25:00')
+    expect(formatDurationShort(3930)).toBe('1:05:30')
+    expect(formatKm(5250)).toBe('5,25 km')
+    expect(formatPace(330)).toBe('5:30 /km')
+  })
+  it('cardio sets never count as strength working sets', () => {
+    const rows = [{ ...base, set_id: '1', workout_id: 'w1', started_at: '2026-10-01T10:00:00Z', set_position: 0, completed: true, duration_seconds: 1500, distance_m: 5000 }]
+    const [sess] = groupSessions(rows)
+    expect(sess.workingSets).toHaveLength(0)
+    expect(sess.bestE1rm).toBeNull()
   })
 })

@@ -56,7 +56,7 @@ export function ActiveWorkoutPage() {
   if (!draft) return <Navigate to="/" replace />
 
   const stats_ = draftStats(draft, (id) => exMap.get(id)?.weight_mode ?? 'total')
-  const incomplete = draft.exercises.reduce((n, e) => n + e.sets.filter((s) => !s.completed && (s.weight != null || s.reps != null)).length, 0)
+  const incomplete = draft.exercises.reduce((n, e) => n + e.sets.filter((s) => !s.completed && (s.weight != null || s.reps != null || s.duration_s != null || s.distance_m != null)).length, 0)
 
   function addExercises(list: Exercise[]) {
     update((d) => {
