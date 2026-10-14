@@ -15,6 +15,11 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState | null>(null)
 
+/** True after the user pressed "Logga ut" – then the login page should not bounce back to the old page. */
+let explicitSignOut = false
+// eslint-disable-next-line react-refresh/only-export-components
+export const wasExplicitSignOut = () => explicitSignOut
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user: session?.user ?? null,
       loading,
       async signIn(email, password) {
+        explicitSignOut = false
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
         if (error) throw new Error(translateAuthError(error.message))
       },
@@ -60,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { needsConfirmation: !data.session }
       },
       async signOut() {
+        explicitSignOut = true
         const uid = session?.user.id
         await supabase.auth.signOut()
         if (uid) {

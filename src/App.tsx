@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
-import { AuthProvider, useAuth } from '@/hooks/auth'
+import { AuthProvider, useAuth, wasExplicitSignOut } from '@/hooks/auth'
 import { supabaseConfigured } from '@/lib/supabase'
 import { PageLoader } from '@/components/ui/card'
 import { AppShell } from '@/components/layout/AppShell'
@@ -33,7 +33,7 @@ function RequireAuth() {
   const { user, loading } = useAuth()
   const loc = useLocation()
   if (loading) return <PageLoader />
-  if (!user) return <Navigate to="/login" replace state={{ from: loc.pathname }} />
+  if (!user) return <Navigate to="/login" replace state={wasExplicitSignOut() ? null : { from: loc.pathname }} />
   return (
     <ActiveWorkoutProvider>
       <Outlet />
