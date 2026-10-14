@@ -1,0 +1,40 @@
+// Sharing screens (local dev). Usage: node scripts/screenshots4.mjs <outdir>
+import { chromium } from '@playwright/test'
+const out = process.argv[2]
+const base = 'http://127.0.0.1:4173'
+const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM })
+const opts = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'sv-SE' }
+const a = await (await browser.newContext(opts)).newPage()
+const b = await (await browser.newContext(opts)).newPage()
+const shot = async (p, n, full = false) => { await p.waitForTimeout(800); await p.screenshot({ path: `${out}/${n}.png`, fullPage: full }) }
+await a.goto(`${base}/login`)
+await a.getByLabel('E-post').fill('demo@forma.test')
+await a.getByLabel('Lösenord').fill('demo-password')
+await a.getByRole('button', { name: 'Logga in' }).click()
+await a.getByRole('heading', { name: 'Dags att träna?' }).waitFor()
+await a.goto(`${base}/settings`)
+await a.getByRole('button', { name: 'Skapa inbjudningskod' }).click()
+const code = (await a.getByTestId('invite-code-value').innerText()).trim()
+await a.getByTestId('invite-code').scrollIntoViewIfNeeded()
+await shot(a, '40-sharing-settings')
+await b.goto(`${base}/login`)
+await b.getByRole('tab', { name: 'Skapa konto' }).click()
+await b.getByLabel('Namn').fill('Sara')
+await b.getByLabel('E-post').fill(`sara-${Date.now()}@forma.test`)
+await b.getByLabel('Lösenord').fill('losenord-123')
+await b.getByRole('button', { name: 'Skapa konto' }).click()
+await b.getByRole('heading', { name: 'Dags att träna?' }).waitFor()
+await b.goto(`${base}/settings`)
+await b.getByLabel('Har du fått en kod?').fill(code)
+await b.getByRole('button', { name: 'Anslut' }).click()
+await b.getByText('Delar med dig').waitFor()
+await b.goto(`${base}/`)
+await b.getByTestId('home-partner').click()
+await shot(b, '41-partner-page', true)
+await b.getByTestId('partner-workout').first().click()
+await shot(b, '42-partner-workout', true)
+// clean up: demo stops sharing
+await a.reload()
+await a.getByRole('button', { name: 'Sluta dela' }).last().click()
+await a.getByRole('dialog').getByRole('button', { name: 'Sluta dela' }).click()
+await browser.close()
