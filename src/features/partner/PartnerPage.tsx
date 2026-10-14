@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Lock, Trophy } from 'lucide-react'
 import { PageHeader } from '@/components/layout/AppShell'
+import { Button } from '@/components/ui/button'
 import { Card, EmptyState, PageLoader, SectionTitle } from '@/components/ui/card'
 import { useExerciseMap, type Exercise } from '@/lib/api/exercises'
 import { usePartnerTraining, useShares } from '@/lib/api/partners'
@@ -33,6 +34,7 @@ export function PartnerPage() {
   const { share, name, isLoading: sharesLoading } = usePartnerName(ownerId)
   const { data, isLoading } = usePartnerTraining(share ? ownerId : undefined)
   const exMap = usePartnerExerciseMap(data?.exercises)
+  const [showAll, setShowAll] = useState(false)
 
   const best = useMemo(() => {
     const by = new Map<string, HistorySet[]>()
@@ -101,7 +103,7 @@ export function PartnerPage() {
           <EmptyState title="Inga pass än" description={`${name} har inte avslutat något pass ännu.`} />
         ) : (
           <div className="space-y-2">
-            {workouts.map((w) => (
+            {(showAll ? workouts : workouts.slice(0, 12)).map((w) => (
               <Link key={w.id} to={`/partner/${ownerId}/workouts/${w.id}`} className="block" data-testid="partner-workout">
                 <Card className="transition-colors hover:bg-surface-2">
                   <div className="flex items-baseline justify-between gap-2">
@@ -112,6 +114,11 @@ export function PartnerPage() {
                 </Card>
               </Link>
             ))}
+            {workouts.length > 12 && (
+              <Button variant="ghost" className="w-full text-muted" onClick={() => setShowAll((v) => !v)}>
+                {showAll ? 'Visa färre' : `Visa alla ${workouts.length} pass`}
+              </Button>
+            )}
           </div>
         )}
       </section>
