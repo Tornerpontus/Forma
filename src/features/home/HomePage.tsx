@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronRight, Flame, Play, Plus, Trophy } from 'lucide-react'
+import { ChevronRight, Flame, Play, Plus, Scale, Target, Trophy } from 'lucide-react'
 import { startOfISOWeek } from 'date-fns'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -14,6 +14,9 @@ import { buildExercise } from '@/lib/training/draft'
 import { formatDate, formatVolume } from '@/lib/format'
 import { formatNum, setVolume } from '@/lib/training/calc'
 import { useActiveWorkout } from '@/features/workout/ActiveWorkoutProvider'
+import { useStrengthGoals, useWeights } from '@/lib/api/body'
+import { trendChange, withMovingAverage } from '@/lib/body/calc'
+import { goalProgress } from '@/features/body/goals'
 
 function greeting() {
   const h = new Date().getHours()
@@ -64,6 +67,13 @@ export function HomePage() {
   const { data: stats } = useExerciseStats()
   const exMap = useExerciseMap()
   const { startFrom, busy } = useStartWorkout()
+  const { data: weights } = useWeights()
+  const { data: goals } = useStrengthGoals()
+  const weightTrend = useMemo(() => {
+    const pts = withMovingAverage((weights ?? []).map((w) => ({ measured_on: w.measured_on, weight: Number(w.weight) })))
+    return pts.length ? { last: pts[pts.length - 1], ch7: trendChange(pts, 7) } : null
+  }, [weights])
+  const openGoals = (goals ?? []).map((g) => ({ g, p: goalProgress(g, stats?.get(g.exercise_id)) })).filter((x) => !x.p.achieved)
 
   const lastDoneByTemplate = useMemo(() => {
     const m = new Map<string, string>()
@@ -108,10 +118,18 @@ export function HomePage() {
       </header>
 
       <Card className="grid grid-cols-3 divide-x divide-border p-0">
-        <Stat label="Pass i veckan" value={String(week.count)} />
+        <Stat label="Pass i veckan" value={profile?.weekly_workout_goal ? `${week.count}/${profile.weekly_workout_goal}` : String(week.count)} />
         <Stat label="Arbetsset" value={String(week.sets)} />
         <Stat label="Volym" value={formatVolume(week.volume)} />
       </Card>
+
+      {profile?.weekly_workout_goal ? (
+        <div className="-mt-3 flex gap-1.5 px-1" aria-label={`${week.count} av ${profile.weekly_workout_goal} pass denna vecka`}>
+          {Array.from({ length: profile.weekly_workout_goal }, (_, i) => (
+            <div key={i} className={`h-1.5 flex-1 rounded-full ${i < week.count ? 'bg-accent' : 'bg-surface-3'}`} />
+          ))}
+        </div>
+      ) : null}
 
       <div>
         <Button size="lg" className="w-full" onClick={() => startFrom(null)} disabled={busy} data-testid="start-empty">
@@ -164,6 +182,42 @@ export function HomePage() {
           </div>
         )}
       </section>
+
+      {(
+        <section className="grid grid-cols-2 gap-2">
+          {weightTrend ? (
+            <Link to="/body" className="rounded-[var(--radius-card)] bg-surface p-3.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-subtle">
+                <Scale className="size-3.5" /> Vikt (7 d snitt)
+              </div>
+              <div className="tabular mt-1 text-xl font-semibold">{formatNum(weightTrend.last.avg7)} kg</div>
+              <div className="text-xs text-muted">{weightTrend.ch7 != null ? `${weightTrend.ch7 > 0 ? '+' : ''}${formatNum(weightTrend.ch7)} kg på en vecka` : 'logga fler dagar för trend'}</div>
+            </Link>
+          ) : (
+            <Link to="/body" className="rounded-[var(--radius-card)] bg-surface p-3.5 text-sm text-muted">
+              <Scale className="mb-1 size-4" /> Logga din vikt
+            </Link>
+          )}
+          {openGoals[0] ? (
+            <Link to="/body?view=goals" className="rounded-[var(--radius-card)] bg-surface p-3.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-subtle">
+                <Target className="size-3.5" /> Nästa mål
+              </div>
+              <div className="mt-1 truncate text-[15px] font-semibold">{exMap.get(openGoals[0].g.exercise_id)?.name}</div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-3">
+                <div className="h-full rounded-full bg-info" style={{ width: `${openGoals[0].p.pct * 100}%` }} />
+              </div>
+              <div className="mt-1 text-xs text-muted">
+                {formatNum(Number(openGoals[0].g.target_weight))} kg × {openGoals[0].g.target_reps} · {Math.round(openGoals[0].p.pct * 100)} %
+              </div>
+            </Link>
+          ) : (
+            <Link to="/body?view=goals" className="rounded-[var(--radius-card)] bg-surface p-3.5 text-sm text-muted">
+              <Target className="mb-1 size-4" /> Sätt ett styrkemål
+            </Link>
+          )}
+        </section>
+      )}
 
       {recentPrs.length > 0 && (
         <section>

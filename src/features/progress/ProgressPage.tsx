@@ -80,11 +80,16 @@ export default function ProgressPage() {
   const header = (
     <PageHeader
       title="Progress"
-      subtitle="Din utveckling över tid"
+      subtitle="Din utveckling"
       action={
-        <Link to="/exercises" className="flex h-9 items-center gap-1 rounded-xl bg-surface-2 px-3 text-sm font-medium">
-          Övningar <ChevronRight className="size-4" />
-        </Link>
+        <div className="flex gap-1.5">
+          <Link to="/body" className="flex h-9 items-center gap-1 rounded-xl bg-surface-2 px-3 text-sm font-medium">
+            Kropp & mål
+          </Link>
+          <Link to="/exercises" className="flex h-9 items-center gap-1 rounded-xl bg-surface-2 px-3 text-sm font-medium">
+            Övningar <ChevronRight className="size-4" />
+          </Link>
+        </div>
       }
     />
   )

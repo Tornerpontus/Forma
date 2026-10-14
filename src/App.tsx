@@ -21,6 +21,7 @@ import { ExerciseLibraryPage } from '@/features/exercises/ExerciseLibraryPage'
 
 // Chart-heavy screens are split out so the workout screen loads fast
 const ProgressPage = lazy(() => import('@/features/progress/ProgressPage'))
+const BodyPage = lazy(() => import('@/features/body/BodyPage'))
 const NutritionStatsPage = lazy(() => import('@/features/nutrition/NutritionStatsPage'))
 const FoodsPage = lazy(() => import('@/features/nutrition/FoodsPage'))
 const RecipeEditorPage = lazy(() => import('@/features/nutrition/RecipeEditorPage'))
@@ -83,6 +84,7 @@ const router = createBrowserRouter(
                   <Route path="exercises" element={<ExerciseLibraryPage />} />
                   <Route path="exercises/:exerciseId" element={<ExerciseDetailPage />} />
                   <Route path="settings" element={<SettingsPage />} />
+                  <Route path="body" element={<BodyPage />} />
                   <Route path="nutrition" element={<NutritionPage />} />
                   <Route path="nutrition/stats" element={<NutritionStatsPage />} />
                   <Route path="nutrition/foods" element={<FoodsPage />} />
