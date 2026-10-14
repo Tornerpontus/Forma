@@ -181,3 +181,29 @@ describe('workouts', () => {
     expect(error).not.toBeNull()
   })
 })
+
+describe('nutrition and body data', () => {
+  it('foods, logs, recipes, meals, weights and goals are private', async () => {
+    const { data: food } = await A.c.from('foods').insert({ user_id: A.id, name: 'Kvarg', kcal: 60, protein: 11, carbs: 4, fat: 0.2 }).select('id').single()
+    await A.c.from('food_logs').insert({ user_id: A.id, logged_on: '2026-10-14', meal: 'breakfast', food_id: food!.id, name: 'Kvarg', grams: 250, kcal: 150, protein: 27.5, carbs: 10, fat: 0.5 })
+    const { data: recipe } = await A.c.from('recipes').insert({ user_id: A.id, name: 'Gröt' }).select('id').single()
+    await A.c.from('recipe_items').insert({ user_id: A.id, recipe_id: recipe!.id, food_id: food!.id, grams: 100 })
+    await A.c.from('body_weights').insert({ user_id: A.id, measured_on: '2026-10-14', weight: 64.2 })
+    await A.c.from('strength_goals').insert({ user_id: A.id, exercise_id: benchId, target_weight: 60, target_reps: 1 })
+
+    for (const table of ['foods', 'food_logs', 'recipes', 'recipe_items', 'saved_meals', 'body_weights', 'body_measurements', 'strength_goals'] as const) {
+      const { data } = await B.c.from(table).select('id')
+      expect(data, table).toHaveLength(0)
+    }
+    // B cannot log A's food or put it in B's recipe
+    const { error: e1 } = await B.c.from('food_logs').insert({ user_id: B.id, logged_on: '2026-10-14', meal: 'lunch', food_id: food!.id, name: 'x', grams: 1, kcal: 1 })
+    expect(e1).not.toBeNull()
+    const { data: bRecipe } = await B.c.from('recipes').insert({ user_id: B.id, name: 'B' }).select('id').single()
+    const { error: e2 } = await B.c.from('recipe_items').insert({ user_id: B.id, recipe_id: bRecipe!.id, food_id: food!.id, grams: 1 })
+    expect(e2).not.toBeNull()
+    // Profile targets are private too
+    await A.c.from('profiles').update({ kcal_target: 2000, target_weight: 60 }).eq('id', A.id)
+    const { data: bView } = await B.c.from('profiles').select('kcal_target').eq('id', A.id)
+    expect(bView).toHaveLength(0)
+  })
+})

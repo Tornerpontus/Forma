@@ -23,7 +23,35 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "exercise_notes": {
+            "body_measurements": {
+                  Row: {
+                    "arm": number | null,"body_fat": number | null,"calf": number | null,"chest": number | null,"created_at": string,"hips": number | null,"id": string,"measured_on": string,"neck": number | null,"note": string,"thigh": number | null,"user_id": string,"waist": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "arm"?: number | null,"body_fat"?: number | null,"calf"?: number | null,"chest"?: number | null,"created_at"?: string,"hips"?: number | null,"id"?: string,"measured_on": string,"neck"?: number | null,"note"?: string,"thigh"?: number | null,"user_id": string,"waist"?: number | null
+                  }
+                  Update: {
+                    "arm"?: number | null,"body_fat"?: number | null,"calf"?: number | null,"chest"?: number | null,"created_at"?: string,"hips"?: number | null,"id"?: string,"measured_on"?: string,"neck"?: number | null,"note"?: string,"thigh"?: number | null,"user_id"?: string,"waist"?: number | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"body_weights": {
+                  Row: {
+                    "created_at": string,"id": string,"measured_on": string,"note": string,"user_id": string,"weight": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"measured_on": string,"note"?: string,"user_id": string,"weight": number
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"measured_on"?: string,"note"?: string,"user_id"?: string,"weight"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"exercise_notes": {
                   Row: {
                     "exercise_id": string,"notes": string,"updated_at": string,"user_id": string
                   }
@@ -63,16 +91,56 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
-                },"profiles": {
+                },"food_logs": {
                   Row: {
-                    "auto_start_rest_timer": boolean,"created_at": string,"default_rest_seconds": number,"display_name": string,"id": string,"locale": string,"show_rir": boolean,"updated_at": string,"weight_unit": string
+                    "carbs": number,"created_at": string,"fat": number,"food_id": string | null,"grams": number,"id": string,"kcal": number,"logged_on": string,"meal": string,"name": string,"protein": number,"recipe_id": string | null,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id": string,"locale"?: string,"show_rir"?: boolean,"updated_at"?: string,"weight_unit"?: string
+                    "carbs"?: number,"created_at"?: string,"fat"?: number,"food_id"?: string | null,"grams": number,"id"?: string,"kcal": number,"logged_on": string,"meal": string,"name": string,"protein"?: number,"recipe_id"?: string | null,"user_id": string
                   }
                   Update: {
-                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id"?: string,"locale"?: string,"show_rir"?: boolean,"updated_at"?: string,"weight_unit"?: string
+                    "carbs"?: number,"created_at"?: string,"fat"?: number,"food_id"?: string | null,"grams"?: number,"id"?: string,"kcal"?: number,"logged_on"?: string,"meal"?: string,"name"?: string,"protein"?: number,"recipe_id"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "food_logs_food_id_fkey"
+      columns: ["food_id"]
+isOneToOne: false
+      referencedRelation: "foods"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "food_logs_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"foods": {
+                  Row: {
+                    "archived": boolean,"brand": string,"carbs": number,"created_at": string,"fat": number,"fiber": number | null,"id": string,"kcal": number,"name": string,"portion_g": number | null,"portion_name": string,"protein": number,"source": string,"source_id": string | null,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived"?: boolean,"brand"?: string,"carbs"?: number,"created_at"?: string,"fat"?: number,"fiber"?: number | null,"id"?: string,"kcal": number,"name": string,"portion_g"?: number | null,"portion_name"?: string,"protein"?: number,"source"?: string,"source_id"?: string | null,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "archived"?: boolean,"brand"?: string,"carbs"?: number,"created_at"?: string,"fat"?: number,"fiber"?: number | null,"id"?: string,"kcal"?: number,"name"?: string,"portion_g"?: number | null,"portion_name"?: string,"protein"?: number,"source"?: string,"source_id"?: string | null,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"profiles": {
+                  Row: {
+                    "auto_start_rest_timer": boolean,"carbs_target": number | null,"created_at": string,"default_rest_seconds": number,"display_name": string,"fat_target": number | null,"height_cm": number | null,"id": string,"kcal_target": number | null,"locale": string,"protein_target": number | null,"show_rir": boolean,"target_weight": number | null,"updated_at": string,"weekly_workout_goal": number | null,"weight_unit": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "auto_start_rest_timer"?: boolean,"carbs_target"?: number | null,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"fat_target"?: number | null,"height_cm"?: number | null,"id": string,"kcal_target"?: number | null,"locale"?: string,"protein_target"?: number | null,"show_rir"?: boolean,"target_weight"?: number | null,"updated_at"?: string,"weekly_workout_goal"?: number | null,"weight_unit"?: string
+                  }
+                  Update: {
+                    "auto_start_rest_timer"?: boolean,"carbs_target"?: number | null,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"fat_target"?: number | null,"height_cm"?: number | null,"id"?: string,"kcal_target"?: number | null,"locale"?: string,"protein_target"?: number | null,"show_rir"?: boolean,"target_weight"?: number | null,"updated_at"?: string,"weekly_workout_goal"?: number | null,"weight_unit"?: string
                   }
                   Relationships: [
                     
@@ -136,6 +204,112 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"recipe_items": {
+                  Row: {
+                    "food_id": string,"grams": number,"id": string,"position": number,"recipe_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "food_id": string,"grams": number,"id"?: string,"position"?: number,"recipe_id": string,"user_id": string
+                  }
+                  Update: {
+                    "food_id"?: string,"grams"?: number,"id"?: string,"position"?: number,"recipe_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "recipe_items_food_id_fkey"
+      columns: ["food_id"]
+isOneToOne: false
+      referencedRelation: "foods"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "recipe_items_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"recipes": {
+                  Row: {
+                    "cooked_weight_g": number | null,"created_at": string,"id": string,"name": string,"notes": string,"servings": number,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cooked_weight_g"?: number | null,"created_at"?: string,"id"?: string,"name": string,"notes"?: string,"servings"?: number,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "cooked_weight_g"?: number | null,"created_at"?: string,"id"?: string,"name"?: string,"notes"?: string,"servings"?: number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"saved_meal_items": {
+                  Row: {
+                    "food_id": string | null,"grams": number,"id": string,"meal_id": string,"position": number,"recipe_id": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "food_id"?: string | null,"grams": number,"id"?: string,"meal_id": string,"position"?: number,"recipe_id"?: string | null,"user_id": string
+                  }
+                  Update: {
+                    "food_id"?: string | null,"grams"?: number,"id"?: string,"meal_id"?: string,"position"?: number,"recipe_id"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "saved_meal_items_food_id_fkey"
+      columns: ["food_id"]
+isOneToOne: false
+      referencedRelation: "foods"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "saved_meal_items_meal_id_fkey"
+      columns: ["meal_id"]
+isOneToOne: false
+      referencedRelation: "saved_meals"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "saved_meal_items_recipe_id_fkey"
+      columns: ["recipe_id"]
+isOneToOne: false
+      referencedRelation: "recipes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"saved_meals": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"strength_goals": {
+                  Row: {
+                    "achieved_at": string | null,"created_at": string,"exercise_id": string,"id": string,"target_date": string | null,"target_reps": number,"target_weight": number,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "achieved_at"?: string | null,"created_at"?: string,"exercise_id": string,"id"?: string,"target_date"?: string | null,"target_reps"?: number,"target_weight": number,"user_id": string
+                  }
+                  Update: {
+                    "achieved_at"?: string | null,"created_at"?: string,"exercise_id"?: string,"id"?: string,"target_date"?: string | null,"target_reps"?: number,"target_weight"?: number,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "strength_goals_exercise_id_fkey"
+      columns: ["exercise_id"]
+isOneToOne: false
+      referencedRelation: "exercises"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"workout_exercises": {
                   Row: {

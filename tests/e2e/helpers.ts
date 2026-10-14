@@ -33,6 +33,6 @@ export async function waitSaved(page: Page) {
   await expect(page.getByTestId('sync-state')).toHaveAttribute('data-state', 'saved', { timeout: 15_000 })
 }
 
-export function tab(page: Page, name: 'Träna' | 'Program' | 'Historik' | 'Progress' | 'Profil') {
+export function tab(page: Page, name: 'Träna' | 'Historik' | 'Kost' | 'Progress' | 'Profil') {
   return page.getByRole('navigation', { name: 'Huvudmeny' }).getByRole('link', { name, exact: true })
 }

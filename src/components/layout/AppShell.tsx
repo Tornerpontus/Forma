@@ -1,13 +1,13 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Dumbbell, History, LineChart, ListChecks, UserRound } from 'lucide-react'
+import { Apple, Dumbbell, History, LineChart, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useActiveWorkout } from '@/features/workout/ActiveWorkoutProvider'
 import { ElapsedClock } from '@/features/workout/ActiveWorkoutPage'
 
 const TABS = [
   { to: '/', label: 'Träna', icon: Dumbbell, end: true },
-  { to: '/programs', label: 'Program', icon: ListChecks },
   { to: '/history', label: 'Historik', icon: History },
+  { to: '/nutrition', label: 'Kost', icon: Apple },
   { to: '/progress', label: 'Progress', icon: LineChart },
   { to: '/settings', label: 'Profil', icon: UserRound },
 ]

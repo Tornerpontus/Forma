@@ -7,7 +7,7 @@ test('two people can train independently: programs, logging, persistence, histor
 
   // --- Anna signs up and creates a program from the PPL template
   await signUp(page, 'Anna', anna)
-  await tab(page, 'Program').click()
+  await page.getByRole('link', { name: 'Hantera' }).click()
   await page.getByTestId('new-program').click()
   await page.getByLabel('Namn').fill('Annas PPL')
   await page.getByRole('button', { name: /Push \/ Pull \/ Ben/ }).click()
@@ -119,7 +119,8 @@ test('two people can train independently: programs, logging, persistence, histor
   await signUp(p, 'Bertil', bertil)
   await tab(p, 'Historik').click()
   await expect(p.getByText('Inga pass än')).toBeVisible()
-  await tab(p, 'Program').click()
+  await tab(p, 'Träna').click()
+  await p.getByRole('link', { name: 'Hantera' }).click()
   await expect(p.getByText('Inga program än')).toBeVisible()
   await p.goto('/exercises')
   await p.getByLabel('Sök övning').fill('Annas')

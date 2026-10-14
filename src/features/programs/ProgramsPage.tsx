@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { usePrograms, useProgramMutations } from '@/lib/api/programs'
 import { useExercises } from '@/lib/api/exercises'
 import { PRESETS } from './presets'
+import { BackLink } from './ProgramDetailPage'
 
 export function ProgramsPage() {
   const { data: programs, isLoading } = usePrograms()
@@ -19,6 +20,7 @@ export function ProgramsPage() {
   return (
     <>
       <PageHeader
+        back={<BackLink to="/" label="Träna" />}
         title="Program"
         subtitle="Dina rutiner och passmallar"
         action={

@@ -16,10 +16,14 @@ import { ProgramWorkoutEditorPage } from '@/features/programs/ProgramWorkoutEdit
 import { HistoryPage } from '@/features/history/HistoryPage'
 import { WorkoutDetailPage } from '@/features/history/WorkoutDetailPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { ExerciseLibraryPage } from '@/features/exercises/ExerciseLibraryPage'
 
 // Chart-heavy screens are split out so the workout screen loads fast
 const ProgressPage = lazy(() => import('@/features/progress/ProgressPage'))
+const NutritionStatsPage = lazy(() => import('@/features/nutrition/NutritionStatsPage'))
+const FoodsPage = lazy(() => import('@/features/nutrition/FoodsPage'))
+const RecipeEditorPage = lazy(() => import('@/features/nutrition/RecipeEditorPage'))
 const ExerciseDetailPage = lazy(() => import('@/features/exercises/ExerciseDetailPage').then((m) => ({ default: m.ExerciseDetailPage })))
 
 const queryClient = new QueryClient({
@@ -79,6 +83,10 @@ const router = createBrowserRouter(
                   <Route path="exercises" element={<ExerciseLibraryPage />} />
                   <Route path="exercises/:exerciseId" element={<ExerciseDetailPage />} />
                   <Route path="settings" element={<SettingsPage />} />
+                  <Route path="nutrition" element={<NutritionPage />} />
+                  <Route path="nutrition/stats" element={<NutritionStatsPage />} />
+                  <Route path="nutrition/foods" element={<FoodsPage />} />
+                  <Route path="nutrition/recipes/:recipeId" element={<RecipeEditorPage />} />
                 </Route>
               </Route>
               <Route path="*" element={<Navigate to="/" replace />} />
