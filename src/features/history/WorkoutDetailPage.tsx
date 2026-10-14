@@ -179,7 +179,7 @@ export function WorkoutDetailPage() {
           </div>
         )}
         <h1 className="text-[28px] font-bold tracking-tight" data-testid="workout-title">{workout.name}</h1>
-        <p className="text-sm capitalize text-muted">{formatDateLong(workout.started_at)}</p>
+        <p className="text-sm first-letter:uppercase text-muted">{formatDateLong(workout.started_at)}</p>
       </div>
 
       <Card className="mt-4 grid grid-cols-3 divide-x divide-border p-0">

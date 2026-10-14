@@ -100,7 +100,7 @@ export default function NutritionStatsPage() {
         <Card className="divide-y divide-border/60 p-0">
           {[...days].reverse().map((d) => (
             <Link key={d.key} to={`/nutrition?d=${d.key}`} className="flex items-center justify-between px-4 py-2.5 text-sm">
-              <span className="capitalize">{format(parseISO(d.key), 'EEEE d MMM', { locale: sv })}</span>
+              <span className="first-letter:uppercase">{format(parseISO(d.key), 'EEEE d MMM', { locale: sv })}</span>
               <span className="tabular text-muted">{d.logged ? `${d.kcal} kcal · P ${d.protein}` : '–'}</span>
             </Link>
           ))}

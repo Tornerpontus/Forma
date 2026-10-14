@@ -59,6 +59,7 @@ function WeightView() {
   const [range, setRange] = useState<RangeKey>('90d')
   const [toDelete, setToDelete] = useState<string | null>(null)
   const [targetOpen, setTargetOpen] = useState(false)
+  const [showAll, setShowAll] = useState(false)
 
   const points = useMemo(() => withMovingAverage((weights ?? []).map((w) => ({ measured_on: w.measured_on, weight: Number(w.weight) }))), [weights])
   const start = rangeStart(range)
@@ -128,11 +129,11 @@ function WeightView() {
           <section>
             <SectionTitle>Vägningar</SectionTitle>
             <Card className="divide-y divide-border/60 p-0">
-              {[...points].reverse().slice(0, 60).map((p) => {
+              {[...points].reverse().slice(0, showAll ? undefined : 14).map((p) => {
                 const row = weights!.find((w) => w.measured_on === p.measured_on)!
                 return (
                   <div key={p.measured_on} className="flex items-center gap-3 py-1 pl-4 pr-2 text-sm">
-                    <span className="flex-1 capitalize">{format(parseISO(p.measured_on), 'EEE d MMM yyyy', { locale: sv })}</span>
+                    <span className="flex-1 first-letter:uppercase">{format(parseISO(p.measured_on), 'EEE d MMM yyyy', { locale: sv })}</span>
                     <span className="tabular font-medium">{formatNum(p.weight)} kg</span>
                     <span className="tabular w-16 text-right text-xs text-muted">⌀ {formatNum(p.avg7)}</span>
                     <Button variant="ghost" size="icon-sm" aria-label={`Ta bort vägning ${p.measured_on}`} onClick={() => setToDelete(row.id)}>
@@ -142,6 +143,11 @@ function WeightView() {
                 )
               })}
             </Card>
+            {points.length > 14 && (
+              <Button variant="ghost" className="mt-2 w-full text-muted" onClick={() => setShowAll(!showAll)}>
+                {showAll ? 'Visa färre' : `Visa alla ${points.length} vägningar`}
+              </Button>
+            )}
           </section>
         </>
       )}
@@ -227,7 +233,7 @@ function MeasurementsView() {
               {rows.map((r) => (
                 <div key={r.id} className="flex items-start gap-2 py-2 pl-4 pr-2">
                   <div className="flex-1">
-                    <div className="text-sm font-medium capitalize">{format(parseISO(r.measured_on), 'EEE d MMM yyyy', { locale: sv })}</div>
+                    <div className="text-sm font-medium first-letter:uppercase">{format(parseISO(r.measured_on), 'EEE d MMM yyyy', { locale: sv })}</div>
                     <div className="tabular text-xs text-muted">
                       {MEASURES.filter((m) => r[m.key] != null).map((m) => `${m.label} ${formatNum(Number(r[m.key]))}`).join(' · ')}
                     </div>

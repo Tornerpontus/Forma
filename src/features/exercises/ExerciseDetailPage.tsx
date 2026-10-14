@@ -178,7 +178,7 @@ export function ExerciseDetailPage() {
                       <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
                           <div className="truncate text-sm font-semibold">{s.workout_name}</div>
-                          <div className="text-xs capitalize text-muted">{formatDate(s.date, { withWeekday: true })}</div>
+                          <div className="text-xs first-letter:uppercase text-muted">{formatDate(s.date, { withWeekday: true })}</div>
                         </div>
                         <div className="flex flex-wrap justify-end gap-1">
                           {evs.map((e) => (

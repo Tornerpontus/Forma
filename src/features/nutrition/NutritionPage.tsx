@@ -57,7 +57,7 @@ export function NutritionPage() {
           <ChevronLeft />
         </Button>
         <div className="text-center">
-          <div className="text-[15px] font-semibold capitalize">{isToday(date) ? 'Idag' : format(date, 'EEEE', { locale: sv })}</div>
+          <div className="text-[15px] font-semibold first-letter:uppercase">{isToday(date) ? 'Idag' : format(date, 'EEEE', { locale: sv })}</div>
           <div className="text-xs text-muted">{format(date, 'd MMMM yyyy', { locale: sv })}</div>
         </div>
         <Button variant="ghost" size="icon" aria-label="Nästa dag" onClick={() => go(addDays(date, 1))} disabled={isToday(date)}>

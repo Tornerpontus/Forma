@@ -41,7 +41,7 @@ export function HistoryPage() {
         <div className="space-y-6">
           {months.map((m) => (
             <section key={m.key}>
-              <SectionTitle className="capitalize">
+              <SectionTitle className="first-letter:uppercase">
                 {m.label} · {m.items.length} pass
               </SectionTitle>
               <div className="space-y-2">
@@ -64,7 +64,7 @@ export function HistoryPage() {
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="truncate text-[17px] font-semibold">{w.name}</div>
-                            <div className="text-sm capitalize text-muted">{formatDate(w.started_at, { withWeekday: true })}</div>
+                            <div className="text-sm first-letter:uppercase text-muted">{formatDate(w.started_at, { withWeekday: true })}</div>
                           </div>
                           {prCount > 0 && (
                             <Badge tone="warn">
