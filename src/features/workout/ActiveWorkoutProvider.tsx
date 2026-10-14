@@ -159,6 +159,11 @@ export function ActiveWorkoutProvider({ children }: { children: ReactNode }) {
       try {
         const server = await fetchActiveWorkout(uid)
         if (cancelled) return
+        if (rec.current) {
+          // A workout was started while we were checking – keep it, it is newer
+          setReady(true)
+          return
+        }
         const serverDraft = (server?.draft as unknown as WorkoutDraft | null) ?? null
         if (server && serverDraft) {
           if (local && local.draft.workout_id === server.id && local.draft.version > (server.draft_version ?? 0)) {
@@ -172,8 +177,8 @@ export function ActiveWorkoutProvider({ children }: { children: ReactNode }) {
           rec.current = null // finished elsewhere or nothing active
         }
       } catch {
-        // Offline: trust the local copy
-        rec.current = local
+        // Offline: trust the local copy (unless a workout was just started)
+        if (!rec.current) rec.current = local
       }
       if (cancelled) return
       persistLocal()
