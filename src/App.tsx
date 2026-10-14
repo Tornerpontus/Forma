@@ -15,9 +15,6 @@ import { ProgramDetailPage } from '@/features/programs/ProgramDetailPage'
 import { ProgramWorkoutEditorPage } from '@/features/programs/ProgramWorkoutEditorPage'
 import { HistoryPage } from '@/features/history/HistoryPage'
 import { WorkoutDetailPage } from '@/features/history/WorkoutDetailPage'
-import { PartnerPage, PartnerWorkoutPage } from '@/features/partner/PartnerPage'
-import { SettingsPage } from '@/features/settings/SettingsPage'
-import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { ExerciseLibraryPage } from '@/features/exercises/ExerciseLibraryPage'
 
 // Chart-heavy screens are split out so the workout screen loads fast
@@ -27,6 +24,12 @@ const NutritionStatsPage = lazy(() => import('@/features/nutrition/NutritionStat
 const FoodsPage = lazy(() => import('@/features/nutrition/FoodsPage'))
 const RecipeEditorPage = lazy(() => import('@/features/nutrition/RecipeEditorPage'))
 const ExerciseDetailPage = lazy(() => import('@/features/exercises/ExerciseDetailPage').then((m) => ({ default: m.ExerciseDetailPage })))
+
+// Less frequently used screens, loaded on demand (all are precached by the service worker for offline use)
+const SettingsPage = lazy(() => import('@/features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage })))
+const NutritionPage = lazy(() => import('@/features/nutrition/NutritionPage').then((m) => ({ default: m.NutritionPage })))
+const PartnerPage = lazy(() => import('@/features/partner/PartnerPage').then((m) => ({ default: m.PartnerPage })))
+const PartnerWorkoutPage = lazy(() => import('@/features/partner/PartnerPage').then((m) => ({ default: m.PartnerWorkoutPage })))
 
 const queryClient = new QueryClient({
   defaultOptions: {
