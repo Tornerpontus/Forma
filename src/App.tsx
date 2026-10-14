@@ -15,6 +15,7 @@ import { ProgramDetailPage } from '@/features/programs/ProgramDetailPage'
 import { ProgramWorkoutEditorPage } from '@/features/programs/ProgramWorkoutEditorPage'
 import { HistoryPage } from '@/features/history/HistoryPage'
 import { WorkoutDetailPage } from '@/features/history/WorkoutDetailPage'
+import { PartnerPage, PartnerWorkoutPage } from '@/features/partner/PartnerPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { ExerciseLibraryPage } from '@/features/exercises/ExerciseLibraryPage'
@@ -84,6 +85,8 @@ const router = createBrowserRouter(
                   <Route path="exercises" element={<ExerciseLibraryPage />} />
                   <Route path="exercises/:exerciseId" element={<ExerciseDetailPage />} />
                   <Route path="settings" element={<SettingsPage />} />
+                  <Route path="partner/:ownerId" element={<PartnerPage />} />
+                  <Route path="partner/:ownerId/workouts/:workoutId" element={<PartnerWorkoutPage />} />
                   <Route path="body" element={<BodyPage />} />
                   <Route path="nutrition" element={<NutritionPage />} />
                   <Route path="nutrition/stats" element={<NutritionStatsPage />} />

@@ -7,4 +7,6 @@ export const qk = {
   workouts: (uid: string) => ['workouts', uid] as const,
   workout: (uid: string, id: string) => ['workout', uid, id] as const,
   setHistory: (uid: string) => ['set-history', uid] as const,
+  shares: (uid: string) => ['shares', uid] as const,
+  partner: (uid: string, ownerId: string) => ['partner', uid, ownerId] as const,
 }

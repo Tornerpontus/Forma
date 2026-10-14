@@ -75,6 +75,7 @@ export function useWorkoutList() {
         await supabase
           .from('workouts')
           .select('id, name, started_at, ended_at, notes, program_workout_id, workout_exercises(id, exercise_id, position, workout_sets(id, set_type, weight, reps, completed))')
+          .eq('user_id', uid)
           .eq('status', 'completed')
           .order('started_at', { ascending: false })
           .limit(500),

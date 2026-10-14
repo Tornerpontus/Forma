@@ -17,7 +17,8 @@ export function useExercises() {
   return useQuery({
     queryKey: qk.exercises(uid),
     queryFn: async () => {
-      const rows = unwrap(await supabase.from('exercises').select('*').order('name'))
+      // Own + global only. A partner's shared custom exercises are readable too but don't belong in my library.
+      const rows = unwrap(await supabase.from('exercises').select('*').or(`user_id.is.null,user_id.eq.${uid}`).order('name'))
       return rows as Exercise[]
     },
     staleTime: 10 * 60_000,

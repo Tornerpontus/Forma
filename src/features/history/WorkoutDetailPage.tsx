@@ -9,6 +9,7 @@ import { ConfirmDialog } from '@/components/ui/sheet'
 import { useDeleteWorkout, useUpdateCompletedWorkout, useWorkout, workoutToDraft } from '@/lib/api/workouts'
 import { useExerciseMap, type Exercise } from '@/lib/api/exercises'
 import { useExerciseStats, usePrsByWorkout } from '@/lib/api/history'
+import { useUserId } from '@/hooks/auth'
 import { useProfile } from '@/lib/api/profile'
 import { formatDateLong, formatDuration, formatVolume } from '@/lib/format'
 import { e1rm, formatDurationShort, formatKm, formatNum, formatPace, setVolume, type PrKind } from '@/lib/training/calc'
@@ -38,6 +39,7 @@ export function WorkoutDetailPage() {
   const [params] = useSearchParams()
   const justFinished = params.get('done') === '1'
   const { data: workout, isLoading } = useWorkout(workoutId)
+  const uid = useUserId()
   const exMap = useExerciseMap()
   const prs = usePrsByWorkout().get(workoutId ?? '') ?? []
   const { data: stats } = useExerciseStats()
@@ -68,6 +70,7 @@ export function WorkoutDetailPage() {
 
   if (isLoading) return <PageLoader />
   if (!workout) return <EmptyState title="Passet hittades inte" action={<Button asChild><Link to="/history">Till historiken</Link></Button>} />
+  if (workout.user_id !== uid) return <Navigate to={`/partner/${workout.user_id}/workouts/${workout.id}`} replace />
   if (workout.status === 'active') return <Navigate to="/workout" replace />
 
   /** Previous session for an exercise, strictly before this workout. */

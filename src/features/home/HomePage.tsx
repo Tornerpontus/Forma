@@ -1,6 +1,7 @@
+import { useShares } from '@/lib/api/partners'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronRight, Flame, Play, Plus, Scale, Target, Trophy } from 'lucide-react'
+import { ChevronRight, Flame, Play, Plus, Scale, Target, Trophy, Users } from 'lucide-react'
 import { startOfISOWeek } from 'date-fns'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -69,6 +70,7 @@ export function HomePage() {
   const { startFrom, busy } = useStartWorkout()
   const { data: weights } = useWeights()
   const { data: goals } = useStrengthGoals()
+  const partners = (useShares().data ?? []).filter((x) => x.direction === 'incoming')
   const weightTrend = useMemo(() => {
     const pts = withMovingAverage((weights ?? []).map((w) => ({ measured_on: w.measured_on, weight: Number(w.weight) })))
     return pts.length ? { last: pts[pts.length - 1], ch7: trendChange(pts, 7) } : null
@@ -249,6 +251,21 @@ export function HomePage() {
                 <Flame className="size-4 text-muted" />
                 <span className="min-w-0 flex-1 truncate text-[15px]">{w.name}</span>
                 <span className="text-xs text-subtle">{formatDate(w.started_at)}</span>
+                <ChevronRight className="size-4 text-subtle" />
+              </Link>
+            ))}
+          </Card>
+        </section>
+      )}
+
+      {partners.length > 0 && (
+        <section>
+          <SectionTitle>Partner</SectionTitle>
+          <Card className="divide-y divide-border/60 p-0">
+            {partners.map((p) => (
+              <Link key={p.owner_id} to={`/partner/${p.owner_id}`} className="flex items-center gap-3 px-4 py-3" data-testid="home-partner">
+                <Users className="size-4 text-muted" />
+                <span className="min-w-0 flex-1 truncate text-[15px]">{p.other_name || 'Partner'}s träning</span>
                 <ChevronRight className="size-4 text-subtle" />
               </Link>
             ))}

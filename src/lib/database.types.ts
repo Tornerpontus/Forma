@@ -291,6 +291,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"share_invites": {
+                  Row: {
+                    "code": string,"created_at": string,"expires_at": string,"owner_id": string,"used_at": string | null,"used_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "code": string,"created_at"?: string,"expires_at"?: string,"owner_id": string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Update: {
+                    "code"?: string,"created_at"?: string,"expires_at"?: string,"owner_id"?: string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"strength_goals": {
                   Row: {
                     "achieved_at": string | null,"created_at": string,"exercise_id": string,"id": string,"target_date": string | null,"target_reps": number,"target_weight": number,"user_id": string
@@ -310,6 +324,20 @@ isOneToOne: false
       referencedRelation: "exercises"
       referencedColumns: ["id"]
     }
+                  ]
+                },"training_shares": {
+                  Row: {
+                    "created_at": string,"owner_id": string,"viewer_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"owner_id": string,"viewer_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"owner_id"?: string,"viewer_id"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"workout_exercises": {
                   Row: {
@@ -409,7 +437,23 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "save_workout":
+            "accept_share_invite":
+{ Args: { "p_code": string }; Returns: string
+                           },
+"can_view_training":
+{ Args: { "p_owner": string }; Returns: boolean
+                           },
+"create_share_invite":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "code": string,"expires_at": string
+            }[]
+                           },
+"list_training_shares":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "created_at": string,"direction": string,"other_name": string,"owner_id": string,"viewer_id": string
+            }[]
+                           },
+"save_workout":
 { Args: { "p_complete"?: boolean,"p_payload": Json,"p_workout_id": string }; Returns: string
                            }
           }

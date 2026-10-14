@@ -11,6 +11,7 @@ import { useProfile, useUpdateProfile } from '@/lib/api/profile'
 import { supabase } from '@/lib/supabase'
 import { ConfirmDialog } from '@/components/ui/sheet'
 import { useActiveWorkout } from '@/features/workout/ActiveWorkoutProvider'
+import { SharingSection } from '@/features/partner/SharingSection'
 
 export function SettingsPage() {
   const { user, signOut } = useAuth()
@@ -94,6 +95,8 @@ export function SettingsPage() {
           </Link>
         </Card>
       </section>
+
+      <SharingSection />
 
       <section>
         <SectionTitle>Installera på telefonen</SectionTitle>

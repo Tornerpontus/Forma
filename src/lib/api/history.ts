@@ -17,6 +17,7 @@ export function useSetHistory() {
         supabase
           .from('set_history')
           .select('set_id, workout_id, workout_name, started_at, exercise_id, exercise_position, set_position, set_type, weight, reps, rir, completed, duration_seconds, distance_m')
+          .eq('user_id', uid) // a partner's shared sets are readable too – never mix them into my own stats
           .order('started_at', { ascending: true })
           .order('set_id', { ascending: true })
           .range(from, to) as unknown as PromiseLike<{ data: HistorySet[] | null; error: { message: string } | null }>,
