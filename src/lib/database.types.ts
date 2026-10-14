@@ -65,14 +65,14 @@ isOneToOne: false
                   ]
                 },"profiles": {
                   Row: {
-                    "auto_start_rest_timer": boolean,"created_at": string,"default_rest_seconds": number,"display_name": string,"id": string,"locale": string,"updated_at": string,"weight_unit": string
+                    "auto_start_rest_timer": boolean,"created_at": string,"default_rest_seconds": number,"display_name": string,"id": string,"locale": string,"show_rir": boolean,"updated_at": string,"weight_unit": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id": string,"locale"?: string,"updated_at"?: string,"weight_unit"?: string
+                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id": string,"locale"?: string,"show_rir"?: boolean,"updated_at"?: string,"weight_unit"?: string
                   }
                   Update: {
-                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id"?: string,"locale"?: string,"updated_at"?: string,"weight_unit"?: string
+                    "auto_start_rest_timer"?: boolean,"created_at"?: string,"default_rest_seconds"?: number,"display_name"?: string,"id"?: string,"locale"?: string,"show_rir"?: boolean,"updated_at"?: string,"weight_unit"?: string
                   }
                   Relationships: [
                     

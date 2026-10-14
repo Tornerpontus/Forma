@@ -15,6 +15,7 @@ create table public.profiles (
   locale text not null default 'sv',
   default_rest_seconds int not null default 120 check (default_rest_seconds between 0 and 1800),
   auto_start_rest_timer boolean not null default true,
+  show_rir boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
