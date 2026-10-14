@@ -40,6 +40,18 @@ export default defineConfig({
   ],
   resolve: { alias: { '@': path.resolve(__dirname, './src') } },
   server: { host: true, port: 5173 },
+  build: {
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          charts: ['recharts'],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,

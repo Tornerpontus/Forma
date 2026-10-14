@@ -17,10 +17,10 @@ import { HistoryPage } from '@/features/history/HistoryPage'
 import { WorkoutDetailPage } from '@/features/history/WorkoutDetailPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { ExerciseLibraryPage } from '@/features/exercises/ExerciseLibraryPage'
-import { ExerciseDetailPage } from '@/features/exercises/ExerciseDetailPage'
 
 // Chart-heavy screens are split out so the workout screen loads fast
 const ProgressPage = lazy(() => import('@/features/progress/ProgressPage'))
+const ExerciseDetailPage = lazy(() => import('@/features/exercises/ExerciseDetailPage').then((m) => ({ default: m.ExerciseDetailPage })))
 
 const queryClient = new QueryClient({
   defaultOptions: {

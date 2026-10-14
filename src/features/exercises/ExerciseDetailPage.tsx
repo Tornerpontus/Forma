@@ -255,7 +255,7 @@ function CompareCard({ title, points, bodyweight }: { title: string; points: Ret
       ) : (
         <div className="mt-2 space-y-1.5 text-sm">
           {metric && <Delta label="e1RM" delta={metric.delta} unit="kg" current={metric.current} />}
-          {!bodyweight && <Delta label="Volym" delta={vol.delta} unit="kg" current={vol.current} />}
+          {!bodyweight && <Delta label="Volym" delta={vol.delta} unit="" current={vol.current} digits={0} />}
           <Delta label="Set" delta={prev ? last.sets - prev.sets : null} unit="" current={last.sets} />
           <div className="text-[11px] text-subtle">Senaste period: {formatShortDate(last.start)}</div>
         </div>
@@ -264,18 +264,18 @@ function CompareCard({ title, points, bodyweight }: { title: string; points: Ret
   )
 }
 
-function Delta({ label, delta, unit, current }: { label: string; delta: number | null; unit: string; current: number | null }) {
+function Delta({ label, delta, unit, current, digits = 1 }: { label: string; delta: number | null; unit: string; current: number | null; digits?: number }) {
   const Icon = delta == null || delta === 0 ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight
   return (
     <div className="flex items-center justify-between gap-2">
       <span className="text-muted">{label}</span>
-      <span className="tabular flex items-center gap-1 font-medium">
-        {formatNum(current)}
+      <span className="tabular flex items-center gap-1 whitespace-nowrap font-medium">
+        {formatNum(current, digits)}
         {unit && ` ${unit}`}
         {delta != null && (
           <span className={cn('flex items-center text-xs', delta > 0 ? 'text-accent' : delta < 0 ? 'text-danger' : 'text-subtle')}>
             <Icon className="size-3.5" />
-            {formatNum(Math.abs(delta))}
+            {formatNum(Math.abs(delta), digits)}
           </span>
         )}
       </span>

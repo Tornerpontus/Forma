@@ -38,7 +38,8 @@ export default function ProgressPage() {
 
   const prs = useMemo(() => {
     const out: { exercise_id: string; kind: keyof typeof PR_LABEL; value: number; date: string; previous: number | null }[] = []
-    for (const [id, st] of stats ?? []) for (const e of st.events) if (!start || new Date(e.date) >= start) out.push({ exercise_id: id, ...e })
+    // Strength PRs only (volume records happen almost every session and drown the signal)
+    for (const [id, st] of stats ?? []) for (const e of st.events) if ((e.kind === 'weight' || e.kind === 'e1rm' || e.kind === 'reps') && (!start || new Date(e.date) >= start)) out.push({ exercise_id: id, ...e })
     return out.sort((a, b) => b.date.localeCompare(a.date))
   }, [stats, range]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -47,7 +48,7 @@ export default function ProgressPage() {
     () =>
       [...(stats ?? [])]
         .filter(([id, st]) => exMap.get(id)?.weight_mode !== 'bodyweight' && st.sessions.some((s) => s.bestE1rm))
-        .sort((a, b) => b[1].sessions.length - a[1].sessions.length)
+        .sort((a, b) => b[1].sessions.length - a[1].sessions.length || (b[1].records.bestE1rm?.value ?? 0) - (a[1].records.bestE1rm?.value ?? 0))
         .slice(0, 12)
         .map(([id]) => id),
     [stats, exMap],
@@ -155,7 +156,7 @@ export default function ProgressPage() {
                     <span className="truncate">{exMap.get(s.id)?.name}</span>
                     <span className="tabular flex shrink-0 items-center gap-2">
                       <span className="text-muted">{formatNum(s.first)} → {formatNum(s.last)} kg</span>
-                      <span className={cn('w-14 text-right font-semibold', s.pct > 0 ? 'text-accent' : s.pct < 0 ? 'text-danger' : 'text-muted')}>
+                      <span className={cn('w-16 whitespace-nowrap text-right font-semibold', s.pct > 0 ? 'text-accent' : s.pct < 0 ? 'text-danger' : 'text-muted')}>
                         {s.pct > 0 ? '+' : ''}
                         {formatNum(s.pct)} %
                       </span>
