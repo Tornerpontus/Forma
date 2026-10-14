@@ -9,6 +9,8 @@ import { Input, Label } from '@/components/ui/input'
 import { useAuth } from '@/hooks/auth'
 import { useProfile, useUpdateProfile } from '@/lib/api/profile'
 import { supabase } from '@/lib/supabase'
+import { ConfirmDialog } from '@/components/ui/sheet'
+import { useActiveWorkout } from '@/features/workout/ActiveWorkoutProvider'
 
 export function SettingsPage() {
   const { user, signOut } = useAuth()
@@ -16,6 +18,8 @@ export function SettingsPage() {
   const update = useUpdateProfile()
   const [name, setName] = useState('')
   const [pw, setPw] = useState('')
+  const { draft, sync } = useActiveWorkout()
+  const [confirmLogout, setConfirmLogout] = useState(false)
 
   useEffect(() => {
     if (profile) setName(profile.display_name)
@@ -133,11 +137,24 @@ export function SettingsPage() {
               </Button>
             </div>
           </form>
-          <Button variant="danger" className="w-full" onClick={() => signOut()}>
+          <Button variant="danger" className="w-full" onClick={() => (draft ? setConfirmLogout(true) : signOut())}>
             <LogOut /> Logga ut
           </Button>
         </Card>
       </section>
+      <ConfirmDialog
+        open={confirmLogout}
+        onOpenChange={setConfirmLogout}
+        title="Du har ett pågående pass"
+        description={
+          sync === 'saved'
+            ? 'Passet är sparat på servern och finns kvar när du loggar in igen.'
+            : 'Passet har ändringar som inte hunnit sparas (ingen anslutning). Loggar du ut nu försvinner de. Vänta tills det står ”Sparat”.'
+        }
+        confirmLabel="Logga ut ändå"
+        danger
+        onConfirm={() => signOut()}
+      />
       <p className="text-center text-xs text-subtle">FORMA · version {__APP_VERSION__}</p>
     </div>
   )

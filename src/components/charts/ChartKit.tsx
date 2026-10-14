@@ -4,7 +4,7 @@ import { Segmented } from '@/components/ui/segmented'
 export const CHART = {
   accent: '#c8f560',
   grid: '#2a2c31',
-  axis: '#6b6f78',
+  axis: '#7d818b',
   muted: '#9a9ea7',
   palette: ['#c8f560', '#7cb7ff', '#f5b860', '#ff8fa3', '#b69cff', '#5fd4c4', '#ffd166', '#9a9ea7'],
 }
